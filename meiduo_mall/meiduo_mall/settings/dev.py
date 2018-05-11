@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'django_filters',
     'users.apps.UsersConfig',
     'verifications.apps.VerificationsConfig',
 ]
@@ -192,3 +194,5 @@ REST_FRAMEWORK = {
     # 异常处理
     'EXCEPTION_HANDLER': 'meiduo_mall.utils.exceptions.exception_handler',
 }
+
+AUTH_USER_MODEL = 'users.User'

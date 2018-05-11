@@ -104,3 +104,4 @@ venv.bak/
 .mypy_cache/
 
 .idea/
+meiduo_mall/meiduo_mall/apps/*/migrations/
