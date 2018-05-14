@@ -124,9 +124,10 @@ var vm = new Vue({
 
             axios.get('http://127.0.0.1:8000/sms_codes/' + this.mobile + '/?image_code=' + this.image_code + '&image_code_id=' + this.image_code_id, {
                 responseType: 'json'
-            }).then(response => {
+            }).then(response => { // 使用箭头函数而不使用function的目的是解决this指代不明
+                // bug:使用function会使this指代不明，倒计时不会刷新
                 var num = 60;
-                var t = setInterval(function () {
+                var t = setInterval(() => {
                     if (num == 1) {
                         clearInterval(t);
                         this.sms_code_tip= "发送完毕";
@@ -135,7 +136,7 @@ var vm = new Vue({
                         num -= 1;
                         this.sms_code_tip = num + '秒';
                     }
-                }, 1000, 60) // TODO:这个60干什么用的？
+                }, 1000)
             }).catch(error => {
                 if (error.response.status == 400) {
                     this.error_image_code_message = "图片验证码有误";
