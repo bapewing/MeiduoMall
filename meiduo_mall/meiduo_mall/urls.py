@@ -16,10 +16,12 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 
-# TODO:apps不设置source就会有红色波浪线
+# bug:总路由不设置的话会出现404的错误
 import verifications.urls
+import users.urls
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'', include(verifications.urls, namespace='verifications'))
+    url(r'', include(verifications.urls, namespace='verifications')),
+    url(r'', include(users.urls, namespace='users'))
 ]
