@@ -129,11 +129,66 @@ var vm = new Vue({
         // 第二步
         // 发送短信验证码
         send_sms_code: function(){
-
+            if (this.sending_flag == true) {
+                return;
+            }
+            this.sending_flag = true;
+            axios.get(this.host+'/sms_codes/?access_token='+ this.access_token, {
+                    responseType: 'json'
+                })
+                .then(response => {
+                    // 表示后端发送短信成功
+                    // 倒计时60秒，60秒后允许用户再次点击发送短信验证码的按钮
+                    var num = 60;
+                    // 设置一个计时器
+                    var t = setInterval(() => {
+                        if (num == 1) {
+                            // 如果计时器到最后, 清除计时器对象
+                            clearInterval(t);
+                            // 将点击获取验证码的按钮展示的文本回复成原始文本
+                            this.sms_code_tip = '获取短信验证码';
+                            // 将点击按钮的onclick事件函数恢复回去
+                            this.sending_flag = false;
+                        } else {
+                            num -= 1;
+                            // 展示倒计时信息
+                            this.sms_code_tip = num + '秒';
+                        }
+                    }, 1000)
+                })
+                .catch(error => {
+                    alert(error.response.data.message);
+                    this.sending_flag = false;
+                })
         },
         // 第二步表单提交，验证手机号，获取修改密码的access_token
         form_2_on_submit: function(){
-
+            this.check_sms_code();
+            if (this.error_sms_code == false) {
+                axios.get(this.host + '/accounts/' + this.username + '/password/token/?sms_code=' + this.sms_code, {
+                        responseType: 'json'
+                    })
+                    .then(response => {
+                        this.user_id = response.data.user_id;
+                        this.access_token = response.data.access_token;
+                        this.step_class['step-3'] = true;
+                        this.step_class['step-2'] = false;
+                        this.is_show_form_2 = false;
+                        this.is_show_form_3 = true;
+                    })
+                    .catch(error => {
+                        if (error.response.status == 400) {
+                            this.error_sms_code_message = '验证码错误';
+                            this.error_sms_code = true;
+                        } else if(error.response.status == 404){
+                            this.error_sms_code_message = '手机号不存在';
+                            this.error_sms_code = true;
+                        } else {
+                            alert(error.response.data.message);
+                            console.log(error.response.data);
+                        }
+                    })
+            }
         },
 
         // 第三步

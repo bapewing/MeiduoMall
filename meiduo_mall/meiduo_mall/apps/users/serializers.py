@@ -5,6 +5,7 @@ from rest_framework import serializers
 from rest_framework_jwt.settings import api_settings
 
 from users.models import User
+from users.utils import get_user_by_account
 
 
 class CreateUserSerializer(serializers.ModelSerializer):
@@ -79,5 +80,24 @@ class CreateUserSerializer(serializers.ModelSerializer):
             }
         }
 
-class CheckSMSCodeTokenSerializer(serializers.Serializer):
-    pass
+
+class CheckSMSCodeSerializer(serializers.Serializer):
+    sms_code = serializers.CharField(min_length=6, max_length=6)
+
+    def validate_sms_code(self, value):
+        # bug:get[] TypeError: 'builtin_function_or_method' object is not subscriptable
+        account = self.context['view'].kwargs.get('account')
+        user = get_user_by_account(account)
+        if not user:
+            raise serializers.ValidationError('用户不存在')
+
+        # TODO: 用户保存到序列化器
+        self.user = user
+
+        redis_conn = get_redis_connection('verify_codes')
+        real_sms_code = redis_conn.get('sms_%s' % user.mobile)
+        if not real_sms_code:
+            raise serializers.ValidationError('无效短信验证码')
+        if value != real_sms_code.decode():
+            raise serializers.ValidationError('短信验证码错误')
+        return value

@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from users.models import User
-from users.serializers import CreateUserSerializer
+from users.serializers import CreateUserSerializer, CheckSMSCodeSerializer
 from users.utils import get_user_by_account
 from verifications.serializers import CheckImageCodeSerializer
 
@@ -68,6 +68,12 @@ class SMSCodeTokenView(GenericAPIView):
     serializer_class = CheckImageCodeSerializer
 
     def get(self, request, account):
+        """
+        获取用户账号发送短信token
+        :param request: 请求对象
+        :param account: 用户名或手机号
+        :return: 格式化手机号/access_token
+        """
         serializer = self.get_serializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
 
@@ -83,3 +89,25 @@ class SMSCodeTokenView(GenericAPIView):
             'mobile': mobile,
             'access_token': access_token
         })
+
+
+class PasswordTokenView(GenericAPIView):
+    """
+    找回密码第二步验证
+    """
+    serializer_class = CheckSMSCodeSerializer
+
+    def get(self, request, account):
+        """
+        获取用户账号修改密码的token
+        :param request: 请求对象
+        :param account: 用户名或是密码
+        :return: user_id/access_token
+        """
+        serializer = self.get_serializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+
+        user = serializer.user
+        access_token = user.generate_set_password_token()
+
+        return Response({'user_id': user.id, 'access_token': access_token})
