@@ -78,3 +78,6 @@ class CreateUserSerializer(serializers.ModelSerializer):
                 }
             }
         }
+
+class CheckSMSCodeTokenSerializer(serializers.Serializer):
+    pass

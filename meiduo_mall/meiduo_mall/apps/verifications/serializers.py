@@ -28,9 +28,11 @@ class CheckImageCodeSerializer(serializers.Serializer):
         if real_image_code.decode().lower() != image_code.lower():
             raise serializers.ValidationError('图片验证码错误')
 
-        mobile = self.context['view'].kwargs['mobile']
-        send_flag = redis_conn.get('send_flag_%s' % mobile)
-        if send_flag:
-            raise serializers.ValidationError('请求过于频繁')
+        # bug: 使用[]字典取值时，key不存在会报错，使用get取值时，key不存在会返回None
+        mobile = self.context['view'].kwargs.get('mobile')
+        if mobile:
+            send_flag = redis_conn.get('send_flag_%s' % mobile)
+            if send_flag:
+                raise serializers.ValidationError('请求过于频繁')
 
         return attrs
