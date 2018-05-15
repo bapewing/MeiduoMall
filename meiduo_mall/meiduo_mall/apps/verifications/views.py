@@ -48,7 +48,7 @@ class SMSCodeView(GenericAPIView):
         serializer = self.get_serializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
 
-        sms_code = str(randint(0, 999999))
+        sms_code = str('%06d' % randint(0, 999999))
         print('sms_code:%s' % sms_code)
 
         redis_conn = get_redis_connection('verify_codes')

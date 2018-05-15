@@ -23,9 +23,9 @@ var vm = new Vue({
         sms_code_tip: '获取短信验证码',
 
         error_image_code_message: '请填写图片验证码',
-		error_sms_code_message: '请填写短信验证码',
-		error_phone_message: '您输入的手机号格式不正确',
-		error_name_message: '请输入5-20个字符的用户'
+        error_sms_code_message: '请填写短信验证码',
+        error_phone_message: '您输入的手机号格式不正确',
+        error_name_message: '请输入5-20个字符的用户'
 
     },
     mounted: function () {
@@ -50,24 +50,24 @@ var vm = new Vue({
         },
         check_username: function () {
             var len = this.username.length;
-			if(len<5||len>20) {
-				this.error_name = true;
-			} else {
+            if (len < 5 || len > 20) {
+                this.error_name = true;
+            } else {
                 this.error_name_message = '请输入5-20个字符的用户名';
-				this.error_name = false;
-			}
+                this.error_name = false;
+            }
 
-            if (this.error_name == false){
+            if (this.error_name == false) {
                 axios.get(this.host + '/usernames/' + this.username + '/count/', {
-                    responseType:'json'
-                }).then((response) =>{
-                    if (response.data.count > 0){
+                    responseType: 'json'
+                }).then((response) => {
+                    if (response.data.count > 0) {
                         this.error_name_message = '用户名已存在';
                         this.error_name = true;
                     } else {
                         this.error_name = false;
                     }
-                }).catch((error) =>{
+                }).catch((error) => {
                     console.log(error.response.data)
                 })
             }
@@ -89,28 +89,28 @@ var vm = new Vue({
         },
         check_phone: function () {
             var re = /^1[345789]\d{9}$/;
-			if(re.test(this.mobile)) {
-				this.error_phone = false;
-			} else {
+            if (re.test(this.mobile)) {
+                this.error_phone = false;
+            } else {
                 this.error_phone_message = '您输入的手机号格式不正确';
-				this.error_phone = true;
-			}
+                this.error_phone = true;
+            }
             if (this.error_phone == false) {
-				axios.get(this.host+'/mobiles/'+ this.mobile + '/count/', {
-						responseType: 'json'
-					})
-					.then(response => {
-						if (response.data.count > 0) {
-							this.error_phone_message = '手机号已存在';
-							this.error_phone = true;
-						} else {
-							this.error_phone = false;
-						}
-					})
-					.catch(error => {
-						console.log(error.response.data);
-					})
-			}
+                axios.get(this.host + '/mobiles/' + this.mobile + '/count/', {
+                    responseType: 'json'
+                })
+                    .then(response => {
+                        if (response.data.count > 0) {
+                            this.error_phone_message = '手机号已存在';
+                            this.error_phone = true;
+                        } else {
+                            this.error_phone = false;
+                        }
+                    })
+                    .catch(error => {
+                        console.log(error.response.data);
+                    })
+            }
         },
         check_image_code: function () {
             if (!this.image_code) {
@@ -141,6 +141,29 @@ var vm = new Vue({
             this.check_phone();
             this.check_sms_code();
             this.check_allow();
+
+            if (this.error_name == false && this.error_password == false && this.error_check_password == false && this.error_phone == false && this.error_sms_code == false && this.error_allow == false) {
+                axios.post(this.host + '/users/', {
+                    username: this.username,
+                    password: this.password,
+                    password2: this.password2,
+                    mobile: this.mobile,
+                    sms_code: this.sms_code,
+                    allow: this.allow.toString()
+                }, {
+                    responseType: 'json'
+                }).then((response) => {
+                    location.href = '/index.html';
+                }).catch((error) => {
+                    // TODO:错误提示有问题，不应该提示短信验证码错误，而应该提示注册失败
+                    if (error.response.status == 400) {
+							this.error_sms_code_message = '短信验证码错误';
+							this.error_sms_code = true;
+						} else {
+							console.log(error.response.data);
+						}
+                })
+            }
         },
         send_sms_code: function () {
             if (this.sending_flag == true) {
@@ -164,7 +187,7 @@ var vm = new Vue({
                 var t = setInterval(() => {
                     if (num == 1) {
                         clearInterval(t);
-                        this.sms_code_tip= "发送完毕";
+                        this.sms_code_tip = "获取短信验证码";
                         this.sending_flag = false;
                     } else {
                         num -= 1;
@@ -179,7 +202,7 @@ var vm = new Vue({
                     // TODO:返回的是后端定义的错误信息吗？
                     console.log(error.response.data)
                 }
-                this.sending_flag= false
+                this.sending_flag = false
             })
 
         }
