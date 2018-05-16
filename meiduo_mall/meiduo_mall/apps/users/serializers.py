@@ -12,7 +12,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(label='确认密码', write_only=True)
     sms_code = serializers.CharField(label='短信验证码', write_only=True)
     allow = serializers.CharField(label='同意协议', write_only=True)
-    token = serializers.CharField(label='登录状态', read_only=True)  # 增加token字段
+    token = serializers.CharField(label='登录状态token', read_only=True)
 
     def validate_mobile(self, value):
         if not re.match(r'^1[35789]\d{9}$', value):
@@ -101,3 +101,49 @@ class CheckSMSCodeSerializer(serializers.Serializer):
         if value != real_sms_code.decode():
             raise serializers.ValidationError('短信验证码错误')
         return value
+
+
+class ResetPasswordSerializer(serializers.ModelSerializer):
+    password2 = serializers.CharField(label='确认密码', write_only=True)
+    access_token = serializers.CharField(label='密码token', write_only=True)
+
+    def validate(self, attrs):
+        """
+        校验数据
+        """
+        # 判断两次密码
+        if attrs['password'] != attrs['password2']:
+            raise serializers.ValidationError('两次密码不一致')
+
+        # 需要对比 access token中的userid 与请求用户的id是否一致
+        allow = User.check_set_password_token(attrs['access_token'], self.context['view'].kwargs['pk'])
+        if not allow:
+            raise serializers.ValidationError('无效的access token')
+
+        return attrs
+
+    def update(self, instance, validated_data):
+        """
+        更新密码
+        :param instance: User对象
+        :param validated_data: 校验后的字典
+        :return: User对象
+        """
+        instance.set_password(validated_data['password'])
+        instance.save()
+        return instance
+
+    class Meta:
+        model = User
+        fields = ('id', 'password', 'password2', 'access_token')
+        extra_kwargs = {
+            'password': {
+                'write_only': True,
+                'min_length': 8,
+                'max_length': 20,
+                'error_messages': {
+                    'min_length': '仅允许8-20个字符的密码',
+                    'max_length': '仅允许8-20个字符的密码',
+                }
+            }
+        }

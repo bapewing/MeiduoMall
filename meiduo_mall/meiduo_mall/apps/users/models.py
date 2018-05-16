@@ -56,3 +56,19 @@ class User(AbstractUser):
             'user_id': self.id
         }).decode()
         return access_token
+
+    @staticmethod
+    def check_set_password_token(access_token, user_id):
+        """
+        检验设置密码的token
+        """
+        serializer = TJWSSerializer(settings.SECRET_KEY, expires_in=constants.SET_PASSWORD_TOKEN_EXPIRES)
+        try:
+            data = serializer.loads(access_token)
+        except BadData:
+            return False
+        else:
+            if user_id != str(data.get('user_id')):
+                return False
+            else:
+                return True

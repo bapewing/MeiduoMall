@@ -2,12 +2,13 @@ import re
 
 from django.shortcuts import render
 from rest_framework import status
-from rest_framework.generics import CreateAPIView, GenericAPIView
+from rest_framework.generics import CreateAPIView, GenericAPIView, UpdateAPIView
+from rest_framework.mixins import UpdateModelMixin
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from users.models import User
-from users.serializers import CreateUserSerializer, CheckSMSCodeSerializer
+from users.serializers import CreateUserSerializer, CheckSMSCodeSerializer, ResetPasswordSerializer
 from users.utils import get_user_by_account
 from verifications.serializers import CheckImageCodeSerializer
 
@@ -111,3 +112,15 @@ class PasswordTokenView(GenericAPIView):
         access_token = user.generate_set_password_token()
 
         return Response({'user_id': user.id, 'access_token': access_token})
+
+
+# TODO： 不能继承UpdateAPIView吗？
+class PasswordView(UpdateModelMixin, GenericAPIView):
+    """
+    重置用户密码
+    """
+    queryset = User.objects.all()
+    serializer_class = ResetPasswordSerializer
+
+    def post(self, request, pk):
+        return self.update(request, pk)
