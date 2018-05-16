@@ -19,9 +19,11 @@ from django.contrib import admin
 # bug:总路由不设置的话会出现404的错误
 import verifications.urls
 import users.urls
+import oauth.urls
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'', include(verifications.urls, namespace='verifications')),
-    url(r'', include(users.urls, namespace='users'))
+    url(r'', include(users.urls, namespace='users')),
+    url(r'oauth/', include(oauth.urls, namespace='oauth')),
 ]
