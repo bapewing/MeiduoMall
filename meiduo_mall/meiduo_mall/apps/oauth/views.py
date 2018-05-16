@@ -7,6 +7,7 @@ from rest_framework_jwt.settings import api_settings
 
 from oauth.exceptions import QQAPIException
 from oauth.models import OauthQQUser
+from oauth.serializers import OauthUserSerializer
 from oauth.utils import OauthQQ
 
 
@@ -29,6 +30,7 @@ class OauthQQUrlView(APIView):
 
 
 class OauthQQUserView(GenericAPIView):
+    serializer_class = OauthUserSerializer
 
     def get(self, request):
         code = request.query_params.get('code')
@@ -64,7 +66,19 @@ class OauthQQUserView(GenericAPIView):
                 'user_id': user.id
             })
 
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
 
+        # 生成已登录的token
+        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+        payload = jwt_payload_handler(user)
+        token = jwt_encode_handler(payload)
 
-
-
+        return Response({
+            'token': token,
+            'username': user.username,
+            'user_id': user.id
+        })

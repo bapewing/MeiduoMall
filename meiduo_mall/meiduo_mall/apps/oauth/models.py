@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.db import models
-from itsdangerous import TimedJSONWebSignatureSerializer as TJWSSerializer
+from itsdangerous import TimedJSONWebSignatureSerializer as TJWSSerializer, BadData
 
 from meiduo_mall.utils import constants
 from meiduo_mall.utils.basemodels import BaseModel
