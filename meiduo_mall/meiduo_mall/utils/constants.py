@@ -13,32 +13,9 @@ SEND_SMS_CODE_TOKEN_EXIPIRES = 300
 # 修改密码token的有效期
 SET_PASSWORD_TOKEN_EXPIRES = 300
 
+# 绑定QQ用户的access_token有效期
+SAVE_QQ_USER_TOKEN_EXPIRES = 600
 
 # 七牛空间域名
 QINIU_DOMIN_PREFIX = "http://p7os57adh.bkt.clouddn.com/"
 
-# 首页展示最多的新闻数量
-HOME_PAGE_MAX_NEWS = 10
-
-# 用户的关注每一页最多数量
-USER_FOLLOWED_MAX_COUNT = 4
-
-# 用户收藏展示最多新闻数量
-USER_COLLECTION_MAX_NEWS = 10
-
-# 其他用户每一页最多新闻数量
-OTHER_NEWS_PAGE_MAX_COUNT = 10
-
-# 点击排行展示的最多新闻数据
-CLICK_RANK_MAX_NEWS = 6
-
-# 管理员页面用户每页多最数据条数
-ADMIN_USER_PAGE_MAX_COUNT = 10
-
-# 管理员页面新闻每页多最数据条数
-ADMIN_NEWS_PAGE_MAX_COUNT = 10
-
-# 设置开发环境
-DEVELOPMENT = "development"
-PRODUCTION = "production"
-TESTING = "testing"
