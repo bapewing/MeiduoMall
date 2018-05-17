@@ -157,6 +157,7 @@ class EmailView(UpdateAPIView):
     #     return EmailSerializer(self.request.user, data=self.request.data)
 
 
+# TODO: 可以使用UpdateAPIView吗？PK怎么办？能够从request.user中获取用户吗？是不是需要前端传送jwt token？应该没有jwt token
 class EmailVerificationView(CreateModelMixin, GenericAPIView):
     serializer_class = EmailVerificationSerializer
 
@@ -165,4 +166,3 @@ class EmailVerificationView(CreateModelMixin, GenericAPIView):
         serializer.is_valid(raise_exception=True)
 
         return self.create(request)
-

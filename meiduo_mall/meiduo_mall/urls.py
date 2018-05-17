@@ -20,10 +20,12 @@ from django.contrib import admin
 import verifications.urls
 import users.urls
 import oauth.urls
+import areas.urls
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'', include(verifications.urls, namespace='verifications')),
     url(r'', include(users.urls, namespace='users')),
     url(r'oauth/', include(oauth.urls, namespace='oauth')),
+    url(r'', include(areas.urls, namespace='areas'))
 ]
