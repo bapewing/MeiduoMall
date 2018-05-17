@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 
 from users.models import User
 from users.serializers import CreateUserSerializer, CheckSMSCodeSerializer, ResetPasswordSerializer, \
-    UserDetailSerializer
+    UserDetailSerializer, EmailSerializer
 from users.utils import get_user_by_account
 from verifications.serializers import CheckImageCodeSerializer
 
@@ -136,5 +136,21 @@ class UserDetailView(RetrieveAPIView):
     # TODO: django认证系统
     permission_classes = [IsAuthenticated]
 
+    # RetrieveAPIView只能自动处理url中包含pk的请求 /user/pk/
+    # 现在的请求路由是 /user/ 所以需要重写get_object方法获取当前用户
+    # 基于django的认证系统，request请求中存储有当前登录的用户
+    # 前端请求时需要在headers中加入jwt token
     def get_object(self):
         return self.request.user
+
+
+class EmailView(UpdateAPIView):
+    # queryset = User.objects.all()
+    serializer_class = EmailSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
+
+    # def get_serializer(self, *args, **kwargs):
+    #     return EmailSerializer(self.request.user, data=self.request.data)

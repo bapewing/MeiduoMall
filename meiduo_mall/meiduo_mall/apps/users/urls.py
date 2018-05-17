@@ -12,5 +12,6 @@ urlpatterns = [
     url(r'accounts/(?P<account>\w{5,20})/sms/token/$', view=views.SMSCodeTokenView.as_view(), name='accounts_sms'),
     url(r'accounts/(?P<account>\w{5,20})/password/token/$', view=views.PasswordTokenView.as_view(), name='accounts_pwd'),
     url(r'users/(?P<pk>\d+)/password/$', view=views.PasswordView.as_view(), name='users_reset'),
-    url(r'user/$', view=views.UserDetailView.as_view(), name='user')
+    url(r'user/$', view=views.UserDetailView.as_view(), name='user'),
+    url(r'emails/$', view=views.EmailView.as_view(), name='emails')
 ]
