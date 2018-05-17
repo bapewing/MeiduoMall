@@ -174,3 +174,36 @@ class EmailSerializer(serializers.ModelSerializer):
         send_verify_email.delay(instance.email, verify_url)
 
         return instance
+
+
+class EmailVerificationSerializer(serializers.ModelSerializer):
+    token = serializers.CharField(label='邮件token', read_only=True)
+
+    def validate(self, attrs):
+        # TODO: 为什么需要以这种方式获取token呢？？？
+        access_token = self.context.get('request').query_params.get('token')
+        if not access_token:
+            return serializers.ValidationError('缺少access_token')
+
+        # TODO： 如果check直接返回已经更新的model，那根本就不需要使用create方法了
+        user = User.check_email_verification_token(access_token)
+        if not user:
+            return serializers.ValidationError('链接无效')
+        attrs['user'] = user
+
+        return attrs
+
+    def create(self, validated_data):
+        user = validated_data.get('user')
+        user.email_active = True
+        user.save()
+        return user
+
+    class Meta:
+        model = User
+        fields = ('id', 'token')
+        extra_kwargs = {
+            'token': {
+                'required': True
+            }
+        }

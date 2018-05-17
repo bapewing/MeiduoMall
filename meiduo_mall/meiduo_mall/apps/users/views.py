@@ -3,14 +3,14 @@ import re
 from django.shortcuts import render
 from rest_framework import status
 from rest_framework.generics import CreateAPIView, GenericAPIView, UpdateAPIView, RetrieveAPIView
-from rest_framework.mixins import UpdateModelMixin
+from rest_framework.mixins import UpdateModelMixin, CreateModelMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from users.models import User
 from users.serializers import CreateUserSerializer, CheckSMSCodeSerializer, ResetPasswordSerializer, \
-    UserDetailSerializer, EmailSerializer
+    UserDetailSerializer, EmailSerializer, EmailVerificationSerializer
 from users.utils import get_user_by_account
 from verifications.serializers import CheckImageCodeSerializer
 
@@ -152,5 +152,17 @@ class EmailView(UpdateAPIView):
     def get_object(self):
         return self.request.user
 
+    # TODO:使用下面这种方法时，必须定义query_set ?
     # def get_serializer(self, *args, **kwargs):
     #     return EmailSerializer(self.request.user, data=self.request.data)
+
+
+class EmailVerificationView(CreateModelMixin, GenericAPIView):
+    serializer_class = EmailVerificationSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+
+        return self.create(request)
+
