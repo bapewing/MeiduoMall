@@ -147,3 +147,10 @@ class ResetPasswordSerializer(serializers.ModelSerializer):
                 }
             }
         }
+
+
+class UserDetailSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'mobile', 'email', 'email_active')

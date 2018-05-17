@@ -2,13 +2,15 @@ import re
 
 from django.shortcuts import render
 from rest_framework import status
-from rest_framework.generics import CreateAPIView, GenericAPIView, UpdateAPIView
+from rest_framework.generics import CreateAPIView, GenericAPIView, UpdateAPIView, RetrieveAPIView
 from rest_framework.mixins import UpdateModelMixin
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from users.models import User
-from users.serializers import CreateUserSerializer, CheckSMSCodeSerializer, ResetPasswordSerializer
+from users.serializers import CreateUserSerializer, CheckSMSCodeSerializer, ResetPasswordSerializer, \
+    UserDetailSerializer
 from users.utils import get_user_by_account
 from verifications.serializers import CheckImageCodeSerializer
 
@@ -124,3 +126,15 @@ class PasswordView(UpdateModelMixin, GenericAPIView):
 
     def post(self, request, pk):
         return self.update(request, pk)
+
+
+class UserDetailView(RetrieveAPIView):
+    """
+    用户详细信息
+    """
+    serializer_class = UserDetailSerializer
+    # TODO: django认证系统
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
