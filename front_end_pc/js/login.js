@@ -11,7 +11,7 @@ var vm = new Vue({
     },
     methods: {
         // 获取url路径参数
-        get_query_string: function(name){
+        get_query_string: function (name) {
             var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
             var r = window.location.search.substr(1).match(reg);
             if (r != null) {
@@ -20,14 +20,14 @@ var vm = new Vue({
             return null;
         },
         // 检查数据
-        check_username: function(){
+        check_username: function () {
             if (!this.username) {
                 this.error_username = true;
             } else {
                 this.error_username = false;
             }
         },
-        check_pwd: function(){
+        check_pwd: function () {
             if (!this.password) {
                 this.error_pwd_message = '请填写密码';
                 this.error_pwd = true;
@@ -36,17 +36,17 @@ var vm = new Vue({
             }
         },
         // 表单提交
-        on_submit: function(){
+        on_submit: function () {
             this.check_username();
             this.check_pwd();
 
             if (this.error_username == false && this.error_pwd == false) {
-                axios.post(this.host+'/authorizations/', {
-                        username: this.username,
-                        password: this.password
-                    }, {
-                        responseType: 'json',
-                    })
+                axios.post(this.host + '/authorizations/', {
+                    username: this.username,
+                    password: this.password
+                }, {
+                    responseType: 'json',
+                })
                     .then(response => {
                         // 使用浏览器本地存储保存token
                         if (this.remember) {
@@ -76,5 +76,16 @@ var vm = new Vue({
                     })
             }
         },
+        qq_login: function () {
+            var state = this.get_query_string('next') || '/';
+            axios.get(this.host + '/oauth/qq/authorization/?state=' + state, {
+                responseType: 'json'
+            }).then((response) => {
+                location.href = response.data.oauth_url;
+            }).catch((error) => {
+                console.log(error.response.data);
+            })
+
+        }
     }
 });
