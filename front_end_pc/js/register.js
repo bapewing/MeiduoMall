@@ -34,7 +34,7 @@ var vm = new Vue({
     methods: {
         get_image_code: function () {
             this.image_code_id = this.generate_uuid()
-            this.image_code_url = 'http://127.0.0.1:8000/image_codes/' + this.image_code_id + '/'
+            this.image_code_url = this.host + '/image_codes/' + this.image_code_id + '/'
         },
         generate_uuid: function () {
             var d = new Date().getTime();
@@ -184,7 +184,7 @@ var vm = new Vue({
                 return;
             }
 
-            axios.get('http://127.0.0.1:8000/sms_codes/' + this.mobile + '/?image_code=' + this.image_code + '&image_code_id=' + this.image_code_id, {
+            axios.get(this.host + '/sms_codes/' + this.mobile + '/?image_code=' + this.image_code + '&image_code_id=' + this.image_code_id, {
                 responseType: 'json'
             }).then(response => { // 使用箭头函数而不使用function的目的是解决this指代不明
                 // bug:使用function会使this指代不明，倒计时不会刷新
