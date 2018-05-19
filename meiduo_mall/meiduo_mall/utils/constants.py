@@ -19,6 +19,9 @@ SAVE_QQ_USER_TOKEN_EXPIRES = 600
 # 邮箱验证token有效期
 EMAIL_VERIFY_TOKEN_EXPIRES = 60 * 60 * 24
 
+# 用户收货地址个数
+USER_ADDRESS_COUNT_LIMIT = 20
+
 # 七牛空间域名
 QINIU_DOMIN_PREFIX = "http://p7os57adh.bkt.clouddn.com/"
 

@@ -6,7 +6,7 @@ from areas.models import Area
 from areas.serializers import AreaSerializer, SubAreaSerializer
 
 
-class AreasViewSet(CacheResponseMixin ,ReadOnlyModelViewSet):
+class AreasViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
     """
     list:
     返回所有的省份

@@ -2,15 +2,19 @@ import re
 
 from django.shortcuts import render
 from rest_framework import status
+from rest_framework.decorators import action
 from rest_framework.generics import CreateAPIView, GenericAPIView, UpdateAPIView, RetrieveAPIView
 from rest_framework.mixins import UpdateModelMixin, CreateModelMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.viewsets import GenericViewSet
 
+from meiduo_mall.utils import constants
 from users.models import User
 from users.serializers import CreateUserSerializer, CheckSMSCodeSerializer, ResetPasswordSerializer, \
-    UserDetailSerializer, EmailSerializer, EmailVerificationSerializer
+    UserDetailSerializer, EmailSerializer, EmailVerificationSerializer, UserAddressSerializer, \
+    UserAddressTitleSerializer
 from users.utils import get_user_by_account
 from verifications.serializers import CheckImageCodeSerializer
 
@@ -166,3 +170,56 @@ class EmailVerificationView(CreateModelMixin, GenericAPIView):
         serializer.is_valid(raise_exception=True)
 
         return self.create(request)
+
+
+class AddressViewSet(CreateModelMixin, UpdateModelMixin, GenericViewSet):
+    """
+    用户地址新增与修改
+    """
+    serializer_class = UserAddressSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return self.request.user.addresses.filter(is_deleted=False)
+
+    def create(self, request, *args, **kwargs):
+        count = request.user.addresses.count()
+        if count > constants.USER_ADDRESS_COUNT_LIMIT:
+            return Response({'message': '保存地址数据已经达到上限'}, status=status.HTTP_400_BAD_REQUEST)
+
+        return super().create(request, *args, **kwargs)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = UserAddressSerializer(queryset, many=True)
+        user = self.request.user
+        return Response({
+            'user_id': user.id,
+            'default_address_id': user.default_address_id,
+            'limit': constants.USER_ADDRESS_COUNT_LIMIT,
+            'addresses': serializer.data,
+        })
+
+    def destroy(self, request, *args, **kwargs):
+        address = self.get_object()
+        address.is_deleted = True
+        address.save()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(methods=['PUT'], detail=True)
+    def status(self, request, pk=None, address_id=None):
+        address = self.get_object()
+        request.user.default_address = address
+        request.user.save()
+
+        return Response({'message': 'OK'}, status=status.HTTP_200_OK)
+
+    @action(methods=['PUT'], detail=True)
+    def title(self, request, pk=None, address_id=None):
+        address = self.get_object()
+        serializer = UserAddressTitleSerializer(address, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data)
