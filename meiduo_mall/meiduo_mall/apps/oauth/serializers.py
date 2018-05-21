@@ -42,7 +42,8 @@ class OauthUserSerializer(serializers.Serializer):
         user = validated_data.get('user')
         if not user:
             # 用户不存在需要注册
-            user = User.objects.create(
+            # bug: 用户密码明文， 不能使用create创建
+            user = User.objects.create_user(
                 username=validated_data['mobile'],
                 mobile=validated_data['mobile'],
                 password=validated_data['password']
