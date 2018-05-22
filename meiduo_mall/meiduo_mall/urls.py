@@ -30,4 +30,5 @@ urlpatterns = [
     url(r'^', include(areas.urls, namespace='areas')),
     # bug:不能添加namespace？
     url(r'^ckeditor/', include('ckeditor_uploader.urls')),
+    url(r'^', include('goods.urls')),
 ]

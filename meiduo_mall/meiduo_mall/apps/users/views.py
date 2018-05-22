@@ -14,7 +14,7 @@ from meiduo_mall.utils import constants
 from users.models import User
 from users.serializers import CreateUserSerializer, CheckSMSCodeSerializer, ResetPasswordSerializer, \
     UserDetailSerializer, EmailSerializer, EmailVerificationSerializer, UserAddressSerializer, \
-    UserAddressTitleSerializer
+    UserAddressTitleSerializer, AddUserHistorySerializer
 from users.utils import get_user_by_account
 from verifications.serializers import CheckImageCodeSerializer
 
@@ -223,3 +223,13 @@ class AddressViewSet(CreateModelMixin, UpdateModelMixin, GenericViewSet):
         serializer.save()
 
         return Response(serializer.data)
+
+
+class UserHistoryView(CreateModelMixin, GenericAPIView):
+    """用户历史记录"""
+    permission_classes = [IsAuthenticated]
+    serializer_class = AddUserHistorySerializer
+
+    def post(self, request):
+        """保存"""
+        return self.create(request)
