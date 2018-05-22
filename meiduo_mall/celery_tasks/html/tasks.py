@@ -52,7 +52,7 @@ def generate_static_sku_detail_html(sku_id):
         spec_sku_map[tuple(key)] = s.id
 
     # 获取当前商品的规格信息
-    #specs = [
+    # specs = [
     #    {
     #        'name': '屏幕尺寸',
     #        'options': [
@@ -68,7 +68,7 @@ def generate_static_sku_detail_html(sku_id):
     #        ]
     #    },
     #    ...
-    #]
+    # ]
     specs = goods.goodsspecification_set.order_by('id')
     # 若当前sku的规格信息不完整，则不再继续
     if len(sku_key) < len(specs):
@@ -95,7 +95,7 @@ def generate_static_sku_detail_html(sku_id):
 
     template = loader.get_template('detail.html')
     html_text = template.render(context)
-    file_path = os.path.join(settings.GENERATED_STATIC_HTML_FILES_DIR, 'goods/'+str(sku_id)+'.html')
+    file_path = os.path.join(settings.GENERATED_STATIC_HTML_FILES_DIR, 'goods/' + str(sku_id) + '.html')
     with open(file_path, 'w') as f:
         f.write(html_text)
 
