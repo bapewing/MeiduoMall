@@ -21,13 +21,13 @@ import verifications.urls
 import users.urls
 import oauth.urls
 import areas.urls
-import ckeditor_uploader.urls
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'', include(verifications.urls, namespace='verifications')),
-    url(r'', include(users.urls, namespace='users')),
-    url(r'oauth/', include(oauth.urls, namespace='oauth')),
-    url(r'', include(areas.urls, namespace='areas')),
-    url(r'^ckeditor/', include(ckeditor_uploader.urls, namespace='ckeditor')),
+    url(r'^', include(verifications.urls, namespace='verifications')),
+    url(r'^', include(users.urls, namespace='users')),
+    url(r'^oauth/', include(oauth.urls, namespace='oauth')),
+    url(r'^', include(areas.urls, namespace='areas')),
+    # bug:不能添加namespace？
+    url(r'^ckeditor/', include('ckeditor_uploader.urls')),
 ]
