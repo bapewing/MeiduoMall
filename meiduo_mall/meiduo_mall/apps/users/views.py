@@ -1,6 +1,7 @@
 import re
 
 from django.shortcuts import render
+from django_redis import get_redis_connection
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.generics import CreateAPIView, GenericAPIView, UpdateAPIView, RetrieveAPIView
@@ -10,6 +11,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 
+from goods.models import SKU
+from goods.serializers import SKUSerializer
 from meiduo_mall.utils import constants
 from users.models import User
 from users.serializers import CreateUserSerializer, CheckSMSCodeSerializer, ResetPasswordSerializer, \
@@ -233,3 +236,20 @@ class UserHistoryView(CreateModelMixin, GenericAPIView):
     def post(self, request):
         """保存"""
         return self.create(request)
+
+    def get(self, request):
+        user_id = request.user.id
+        # 查询redis数据库
+        redis_conn = get_redis_connection('history')
+        sku_id_list = redis_conn.lrange('history_%s' % user_id, 0, constants.USER_BROWSING_HISTORY_COUNTS_LIMIT)
+
+        # 根据redis返回的sku id 查询数据
+        # SKU.objects.filter(id__in=sku_id_list)
+        sku_list = []
+        for sku_id in sku_id_list:
+            sku = SKU.objects.get(id=sku_id)
+            sku_list.append(sku)
+
+        # 使用序列化器序列化
+        serializer = SKUSerializer(sku_list, many=True)
+        return Response(serializer.data)

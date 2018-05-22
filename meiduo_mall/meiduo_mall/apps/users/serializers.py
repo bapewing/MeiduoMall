@@ -6,6 +6,7 @@ from rest_framework_jwt.settings import api_settings
 
 from celery_tasks.emails.tasks import send_verify_email
 from goods.models import SKU
+from meiduo_mall.utils import constants
 from users.models import User, Address
 from users.utils import get_user_by_account
 
