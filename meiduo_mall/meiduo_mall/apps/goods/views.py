@@ -1,9 +1,10 @@
+from drf_haystack.viewsets import HaystackViewSet
 from rest_framework.filters import OrderingFilter
 from rest_framework.generics import ListAPIView
 from rest_framework_extensions.cache.mixins import ListCacheResponseMixin
 
 from goods.models import SKU
-from goods.serializers import SKUSerializer
+from goods.serializers import SKUSerializer, SKUIndexSerializer
 from meiduo_mall.utils import constants
 
 
@@ -34,3 +35,12 @@ class SKUListView(ListAPIView):
     def get_queryset(self):
         categroy_id = self.kwargs.get("category_id")
         return SKU.objects.filter(category_id=categroy_id, is_launched=True)
+
+
+class SKUSearchViewSet(HaystackViewSet):
+    """
+    SKU搜索
+    """
+    index_models = [SKU]
+
+    serializer_class = SKUIndexSerializer
