@@ -6,11 +6,14 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from carts.serializers import CartSerializer
+from carts.serializers import CartSerializer, CartSKUSerializer
+from goods.models import SKU
 
 
 class CartView(APIView):
 
+    # TODO:了解下重写方法。
+    # 允许用户未登陆情况下访问此接口，通过判断user的值来确定是否登陆
     def perform_authentication(self, request):
         pass
 
@@ -69,9 +72,42 @@ class CartView(APIView):
 
             response = Response(serializer.data, status=status.HTTP_201_CREATED)
             response.set_cookie('cart', cookie_cart)
-            return  response
+            return response
 
+    def get(self, request):
 
+        try:
+            user = request.user
+        except Exception:
+            user = None
 
+        if user and user.is_authenticated:
+            redis_conn = get_redis_connection('cart')
+            redis_cart = redis_conn.hgetall('cart_%s' % user.id)
+            cart_selected = redis_conn.smembers('cart_selected_%s' % user.id)
 
+            # 将redis和cookie整合成一致的字典，方便数据库查询
+            cart_dict = {}
+            for sku_id, count in redis_cart.items():
+                # redis中键值都是字符串
+                cart_dict[int(sku_id)] = {
+                    'count': int(count),
+                    'selected': sku_id in cart_selected
+                }
+        else:
+            cart_str = request.COOKIES.get('cart')
+            if cart_str:
+                cart_dict = pickle.loads(base64.b64decode(cart_str.encode()))
+            else:
+                cart_dict = {}
 
+        sku_id_list = cart_dict.keys()
+        # 查询购物车中sku对象
+        sku_obj_list = SKU.objects.filter(id__in=sku_id_list)
+        for sku in sku_obj_list:
+            sku.count = cart_dict[sku.id]['count']
+            sku.selected = cart_dict[sku.id]['selected']
+
+        # TODO: 多的一方序列化
+        serializer = CartSKUSerializer(sku_obj_list, many=True)
+        return Response(serializer.data)
