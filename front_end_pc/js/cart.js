@@ -93,15 +93,65 @@ var vm = new Vue({
                 this.cart[index].count = this.origin_input;
             } else {
                 // 更新购物车数据
+                axios.put(this.host + '/cart/', {
+                    sku_id: this.cart[index].id,
+                    count: val,
+                    selected: this.cart[index].selected
+                }, {
+                    headers: {
+                        'Authorization': 'JWT ' + this.token
+                    },
+                    responseType: 'json',
+                    withCredentials: true
+                })
+                    .then(response => {
+                        this.cart[index].count = response.data.count;
+                    })
+                    .catch(error => {
+                        alert(error.response.data.message);
+                        this.cart[index].count = this.origin_input;
+                    })
             }
         },
         // 更新购物车数据
         update_count: function (index, count) {
-
+            axios.put(this.host + '/cart/', {
+                sku_id: this.cart[index].id,
+                count,
+                selected: this.cart[index].selected
+            }, {
+                headers: {
+                    'Authorization': 'JWT ' + this.token
+                },
+                responseType: 'json',
+                withCredentials: true
+            })
+                .then(response => {
+                    this.cart[index].count = response.data.count;
+                })
+                .catch(error => {
+                    alert(error.response.data.message);
+                })
         },
         // 更新购物车数据
         update_selected: function (index) {
-
+            axios.put(this.host + '/cart/', {
+                sku_id: this.cart[index].id,
+                count: this.cart[index].count,
+                selected: this.cart[index].selected
+            }, {
+                headers: {
+                    'Authorization': 'JWT ' + this.token
+                },
+                responseType: 'json',
+                withCredentials: true
+            })
+                .then(response => {
+                    this.cart[index].selected = response.data.selected;
+                })
+                .catch(error => {
+                    alert(error.response.data.message);
+                })
         }
     }
 });

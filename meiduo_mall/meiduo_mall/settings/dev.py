@@ -242,7 +242,8 @@ REST_FRAMEWORK_EXTENSIONS = {
 GENERATED_STATIC_HTML_FILES_DIR = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), 'front_end_pc')
 
 # 解决crontab中文问题
-CRONTAB_COMMAND_PREFIX = 'LANG=zh_cn.UTF-8'
+CRONTAB_COMMAND_PREFIX = 'LANG_ALL=zh_cn.UTF-8'
+
 
 # 定时任务
 CRONJOBS = [
