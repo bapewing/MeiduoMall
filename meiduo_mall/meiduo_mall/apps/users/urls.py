@@ -9,7 +9,8 @@ urlpatterns = [
     url(r'^mobiles/(?P<mobile>1[35789]\d{9})/count/$', view=views.MobileCountView.as_view(), name='mobiles'),
     # bug: user/$ 需要以$结尾，路由从上到下运行，路由的正则匹配不准确时，访问不到重置密码的路由
     url(r'^users/$', view=views.RegisterUserView.as_view(), name='users_login'),
-    url(r'^authorizations/$', obtain_jwt_token, name='authorizations'),
+    # url(r'^authorizations/$', obtain_jwt_token, name='authorizations'),
+    url(r'^authorizations/$', views.UserAuthorizeView.as_view(), name='authorizations'),  # 登录，获取JWT token
     url(r'^accounts/(?P<account>\w{5,20})/sms/token/$', view=views.SMSCodeTokenView.as_view(), name='accounts_sms'),
     url(r'^accounts/(?P<account>\w{5,20})/password/token/$', view=views.PasswordTokenView.as_view(),
         name='accounts_pwd'),

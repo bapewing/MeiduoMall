@@ -176,6 +176,7 @@ var vm = new Vue({
             this.check_sms_code();
 
             if (this.error_password == false && this.error_phone == false && this.error_sms_code == false) {
+                // TODO: QQ登陆时购物车合并，未实现
                 axios.post(this.host + '/oauth/qq/user/', {
                     password: this.password,
                     mobile: this.mobile,

@@ -58,6 +58,7 @@ class CartView(APIView):
             #     sku_id: {
             #     "count": xxx, // 数量
             #     "selected": True // 是否勾选
+            #     }
             # }
 
             if sku_id in cart_dict:
