@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_jwt.settings import api_settings
 
+from carts.utils import merge_cart_cookie_to_redis
 from oauth.exceptions import QQAPIException
 from oauth.models import OauthQQUser
 from oauth.serializers import OauthUserSerializer
@@ -60,11 +61,14 @@ class OauthQQUserView(GenericAPIView):
             payload = jwt_payload_handler(user)
             token = jwt_encode_handler(payload)
             # 前端通过返回数据是否有user_id而判断是注册用户还是关联用户
-            return Response({
+            response = Response({
                 'token': token,
                 'username': user.username,
                 'user_id': user.id
             })
+            response = merge_cart_cookie_to_redis(request, user, response)
+
+            return response
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
@@ -77,8 +81,12 @@ class OauthQQUserView(GenericAPIView):
         payload = jwt_payload_handler(user)
         token = jwt_encode_handler(payload)
 
-        return Response({
+        response = Response({
             'token': token,
             'username': user.username,
             'user_id': user.id
         })
+        response = merge_cart_cookie_to_redis(request, user, response)
+
+        return response
+
