@@ -1,12 +1,12 @@
 import base64
 import pickle
-from django.shortcuts import render
+
 from django_redis import get_redis_connection
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from carts.serializers import CartSerializer, CartSKUSerializer
+from carts.serializers import CartSerializer, CartSKUSerializer, CartDeleteSerializer
 from goods.models import SKU
 
 
@@ -158,5 +158,44 @@ class CartView(APIView):
 
             response = Response(serializer.data)
             response.set_cookie('cart', cookie_cart)
+
+            return response
+
+    def delete(self, request):
+
+        # TODO: 不使用序列化器该怎样去校验？
+        serializer = CartDeleteSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        sku_id = serializer.validated_data.get('sku_id')
+
+        try:
+            user = request.user
+        except Exception:
+            user = None
+
+        if user and user.is_authenticated:
+            # 如果用户登录，修改redis数据
+            redis_conn = get_redis_connection('cart')
+            pl = redis_conn.pipeline()
+            pl.hdel('cart_%s' % user.id, sku_id)
+            pl.srem('cart_selected_%s' % user.id, sku_id)
+            pl.execute()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+        else:
+            # cookie
+            cart_str = request.COOKIES.get('cart')
+            if cart_str:
+                cart_dict = pickle.loads(base64.b64decode(cart_str.encode()))
+            else:
+                cart_dict = {}
+
+            response = Response(serializer.data)
+
+            if sku_id in cart_dict:
+                # 删除字典的键值对
+                del cart_dict[sku_id]
+                cookie_cart = base64.b64encode(pickle.dumps(cart_dict)).decode()
+                response.set_cookie('cart', cookie_cart)
 
             return response
