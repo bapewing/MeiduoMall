@@ -62,7 +62,6 @@ class PaymentStatusView(APIView):
         alipay_data_dict = query_dict.dict()
         sign = alipay_data_dict.pop('sign')
 
-
         alipay_client = AliPay(
             appid=settings.ALIPAY_APPID,
             app_notify_url=None,  # 默认回调url
@@ -88,3 +87,7 @@ class PaymentStatusView(APIView):
         else:
             # 参数据不是支付宝的，是非法请求
             return Response({'message': '非法请求'}, status=status.HTTP_403_FORBIDDEN)
+
+# TODO: 未实现
+# 1.我的订单 2.修改密码 3.评价与评分 4.三级导航分类
+
