@@ -21,9 +21,11 @@ import verifications.urls
 import users.urls
 import oauth.urls
 import areas.urls
+import xadmin
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
+    # url(r'^admin/', admin.site.urls),
+    url(r'xadmin/', include(xadmin.site.urls)),
     url(r'^', include(verifications.urls, namespace='verifications')),
     url(r'^', include(users.urls, namespace='users')),
     url(r'^oauth/', include(oauth.urls, namespace='oauth')),

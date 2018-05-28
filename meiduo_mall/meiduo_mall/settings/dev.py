@@ -47,6 +47,9 @@ INSTALLED_APPS = [
     'ckeditor_uploader',  # 富文本编辑器上传图片模块
     'django_crontab',  # 定时任务
     'haystack',
+    'xadmin',
+    'crispy_forms',
+    'reversion',
     'users.apps.UsersConfig',
     'verifications.apps.VerificationsConfig',
     'oauth.apps.OauthConfig',
@@ -246,7 +249,6 @@ GENERATED_STATIC_HTML_FILES_DIR = os.path.join(os.path.dirname(os.path.dirname(B
 # 解决crontab中文问题
 CRONTAB_COMMAND_PREFIX = 'LANG_ALL=zh_cn.UTF-8'
 
-
 # 定时任务
 CRONJOBS = [
     # 每5分钟执行一次生成主页静态文件
@@ -320,4 +322,3 @@ HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 ALIPAY_APPID = '2016110100784390'
 ALIPAY_DEBUG = True
 ALIPAY_GATEWAY_URL = 'https://openapi.alipaydev.com/gateway.do'
-
