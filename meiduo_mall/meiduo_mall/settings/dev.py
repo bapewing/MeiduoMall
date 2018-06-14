@@ -103,7 +103,16 @@ DATABASES = {
         'USER': 'meiduo',
         'PASSWORD': '1017',
         'NAME': 'meiduo_mall'
-    }
+    },
+    # 'slave': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'HOST': '172.16.10.138',
+    #     'PORT': 8306,
+    #     'USER': 'root',
+    #     'PASSWORD': '1017',
+    #     'NAME': 'meiduo_mall'
+    # }
+
 }
 
 CACHES = {
@@ -238,7 +247,7 @@ REST_FRAMEWORK = {
 # DRF扩展
 REST_FRAMEWORK_EXTENSIONS = {
     # 缓存时间
-    'DEFAULT_CACHE_RESPONSE_TIMEOUT': 60 * 60,
+    'DEFAULT_CACHE_RESPONSE_TIMEOUT': 60 * 5,
     # 缓存存储
     'DEFAULT_USE_CACHE': 'default',
 }
@@ -324,3 +333,8 @@ HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 ALIPAY_APPID = '2016110100784390'
 ALIPAY_DEBUG = True
 ALIPAY_GATEWAY_URL = 'https://openapi.alipaydev.com/gateway.do'
+
+# 配置读写分离
+# DATABASE_ROUTERS = ['meiduo_mall.utils.db_router.MasterSlaveRouter']
+
+STATIC_ROOT = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), 'front_end_pc/static')
