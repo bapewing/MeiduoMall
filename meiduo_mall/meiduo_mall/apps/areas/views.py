@@ -14,10 +14,13 @@ class AreasViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
     retrieve:
     返回特定省或市的下属行政规划区域
     """
-    # TODO:关闭分页处理
+    # 为什么关闭分页处理？
+    # 使用 ListModelMixin 的时候使用的时django默认分页功能
     pagination_class = None
 
-    # TODO:了解下重写query_set方法
+    # 了解下重写query_set方法
+    # 使用到数据库查询的时候都必须定义queryset或是使用get_queryset
+    # 针对不同请求时做处理
     def get_queryset(self):
         if self.action == 'list':
             return Area.objects.filter(parent=None)

@@ -85,7 +85,6 @@ var vm = new Vue({
         },
         // 删除购物车数据
         on_delete: function (index) {
-            // TODO: axios 简写的格式
             axios.delete(this.host + '/cart/', {
                 data: {
                     sku_id: this.cart[index].id

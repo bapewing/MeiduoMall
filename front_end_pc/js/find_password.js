@@ -184,7 +184,6 @@ var vm = new Vue({
                             this.error_sms_code_message = '手机号不存在';
                             this.error_sms_code = true;
                         } else {
-                            // TODO:没有message
                             alert(error.response.data.message);
                             console.log(error.response.data);
                         }

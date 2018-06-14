@@ -10,7 +10,8 @@ class AreaSerializer(serializers.ModelSerializer):
 
 
 class SubAreaSerializer(serializers.ModelSerializer):
-    # TODO:这是干什么用的？
+    # 这是干什么用的？
+    # model中使用related_name定义多的一方，序列化器中需要使用many=True
     subs = AreaSerializer(many=True, read_only=True)
 
     class Meta:

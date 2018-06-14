@@ -24,7 +24,7 @@ def merge_cart_cookie_to_redis(request, user, response):
 
     cart = {}
     for sku_id, count in cart_redis.items():
-        # redis中存储的都是字符串，取出都是二进制，整型字符串直接强转成整型
+        # redis中存储的都是字符串，取出都是bytes，整型字符串直接强转成整型
         cart[int(sku_id)] = int(count)
 
     selected_sku_id_list = []

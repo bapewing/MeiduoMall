@@ -1,14 +1,12 @@
 from random import randint
 
 from django.http import HttpResponse
-from django.shortcuts import render
 from django_redis import get_redis_connection
 from rest_framework import status
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-# TODO:了解 os.ptah
 from meiduo_mall.utils import constants
 from meiduo_mall.utils.captcha.captcha import captcha
 from users.models import User
@@ -54,8 +52,7 @@ class SMSCodeView(GenericAPIView):
 
         redis_conn = get_redis_connection('verify_codes')
         pl = redis_conn.pipeline()
-        # TODO:这是做什么用的？
-        pl.multi()
+        # pl.multi()
         # 解决:验证码不是发送成功才往redis存吗？==>同步耗时任务，用户体验差
         pl.setex('sms_%s' % mobile, constants.SMS_CODE_REDIS_EXPIRES, sms_code)
         pl.setex('send_flag_%s' % mobile, constants.SMS_CODE_REDIS_INTERVAL, 1)
@@ -95,8 +92,6 @@ class SMSCodeByTokenView(APIView):
 
         redis_conn = get_redis_connection('verify_codes')
         pl = redis_conn.pipeline()
-        # TODO:这是做什么用的？
-        pl.multi()
         # 解决:验证码不是发送成功才往redis存吗？==>同步耗时任务，用户体验差
         pl.setex('sms_%s' % mobile, constants.SMS_CODE_REDIS_EXPIRES, sms_code)
         pl.setex('send_flag_%s' % mobile, constants.SMS_CODE_REDIS_INTERVAL, 1)

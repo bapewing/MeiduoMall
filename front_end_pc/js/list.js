@@ -85,6 +85,7 @@ var vm = new Vue({
         },
         // 请求商品数据
         get_skus: function () {
+            // 查询字符串的第二种形式，使用params，适用于
             axios.get(this.host + '/categories/' + this.cat + '/skus/', {
                 params: {
                     page: this.page,

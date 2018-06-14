@@ -157,10 +157,11 @@ var vm = new Vue({
                     localStorage.clear()
                     localStorage.token = response.data.token
                     localStorage.username = response.data.username
-                    localStorage.user_id = response.data.user_id
+                    localStorage.user_id = response.data.id
                     location.href = '/index.html';
                 }).catch((error) => {
-                    // TODO:错误提示有问题，不应该提示短信验证码错误，而应该提示注册失败
+                    // 错误提示有问题，不应该提示短信验证码错误，而应该提示注册失败
+                    // 序列化的non-field-errors错误应该统一处理，比如在中间件的请求后
                     if (error.response.status == 400) {
 							this.error_sms_code_message = '短信验证码错误';
 							this.error_sms_code = true;
@@ -183,7 +184,7 @@ var vm = new Vue({
                 this.sending_flag = false
                 return;
             }
-
+            // Get请求查询字符串第一种形式，直接 ? 后拼接
             axios.get(this.host + '/sms_codes/' + this.mobile + '/?image_code=' + this.image_code + '&image_code_id=' + this.image_code_id, {
                 responseType: 'json'
             }).then(response => { // 使用箭头函数而不使用function的目的是解决this指代不明
@@ -204,7 +205,6 @@ var vm = new Vue({
                     this.error_image_code_message = "图片验证码有误";
                     this.error_image_code = true;
                 } else {
-                    // TODO:返回的是后端定义的错误信息吗？
                     console.log(error.response.data)
                 }
                 this.sending_flag = false

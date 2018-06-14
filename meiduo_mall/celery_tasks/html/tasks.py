@@ -103,7 +103,7 @@ def generate_static_sku_detail_html(sku_id):
 @celery_app.task(name='generate_static_list_search_html')
 def generate_static_list_search_html():
     """
-    生成静态的商品列表页html文件
+    商品列表页的商品分类进行静态化处理
     """
     # 商品分类菜单
     categories = get_categories()

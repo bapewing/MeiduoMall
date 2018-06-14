@@ -64,7 +64,7 @@ var vm = new Vue({
                             sessionStorage.username = response.data.username;
                         }
 
-                        // TODO:通过next跳转？ 跳转页面
+                        // TODO:通过next跳转？跳转页面
                         var return_url = this.get_query_string('next');
                         if (!return_url) {
                             return_url = '/index.html';

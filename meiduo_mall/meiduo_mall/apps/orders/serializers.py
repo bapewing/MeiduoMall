@@ -14,7 +14,7 @@ class OrderSettlementSerializer(serializers.Serializer):
     skus = CartSKUSerializer(many=True, read_only=True)
 
 
-# TODO: 保存订单需要再理思路
+# 重点在于事务的处理以及高并发时使用乐观锁
 class SaveOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderInfo
@@ -69,7 +69,7 @@ class SaveOrderSerializer(serializers.ModelSerializer):
                 # 获取redis中选中的商品的数量
                 cart = {}
                 for sku_id in cart_selected:
-                    # TODO: sku_id不用强转吗？
+                    # sku_id不用强转吗？ redis中存取都用bytes 不影响取值 只需将取出的是int的bytes强转
                     cart[int(sku_id)] = int(cart_redis[sku_id])
 
                 # bug: 乐观锁时不能时时更新 sku_obj_list = SKU.objects.filter(id__in=cart.keys())
@@ -99,7 +99,7 @@ class SaveOrderSerializer(serializers.ModelSerializer):
 
                         # 保存订单
                         OrderGoods.objects.create(
-                            # TODO: 外键的保存形式？
+                            # 外键的保存形式？ 默认是以主键id形式保存
                             order=order,
                             sku=sku,
                             count=count,

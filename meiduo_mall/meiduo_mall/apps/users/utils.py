@@ -27,7 +27,6 @@ def get_user_by_account(account):
     :return: User对象/None
     """
     try:
-        # TODO: 根据产品需求约定用户名输入规则
         if re.match(r'^1[35789]\d{9}$', account):
             user = User.objects.get(mobile=account)
         else:

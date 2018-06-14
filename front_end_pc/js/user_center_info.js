@@ -12,7 +12,7 @@ var vm = new Vue({
         send_email_btn_disabled: false,
         send_email_tip: '重新发送验证邮件',
         email_error: false,
-        histories:[],
+        histories: [],
     },
     mounted: function () {
         // 判断用户的登录状态
@@ -33,14 +33,14 @@ var vm = new Vue({
                     this.email_active = response.data.email_active;
                     // 补充请求浏览历史
                     axios.get(this.host + '/browse_histories/', {
-                            headers: {
-                                'Authorization': 'JWT ' + this.token
-                            },
-                            responseType: 'json'
-                        })
+                        headers: {
+                            'Authorization': 'JWT ' + this.token
+                        },
+                        responseType: 'json'
+                    })
                         .then(response => {
                             this.histories = response.data;
-                            for(var i=0; i<this.histories.length; i++){
+                            for (var i = 0; i < this.histories.length; i++) {
                                 this.histories[i].url = '/goods/' + this.histories[i].id + '.html';
                             }
                         })
@@ -71,7 +71,7 @@ var vm = new Vue({
                 this.email_error = true;
                 return;
             }
-            // TODO: restful定义应该使用put请求
+            // restful定义使用put请求，也可使用post请求，后台替换相应的视图函数
             axios.put(this.host + '/emails/',
                 {email: this.email},
                 {

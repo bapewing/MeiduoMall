@@ -244,12 +244,14 @@ REST_FRAMEWORK_EXTENSIONS = {
 }
 
 # 生成的静态html文件保存目录
+# TODO: 静态文件放在Nginx时，这个目录需要更改？
 GENERATED_STATIC_HTML_FILES_DIR = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), 'front_end_pc')
 
 # 解决crontab中文问题
 CRONTAB_COMMAND_PREFIX = 'LANG_ALL=zh_cn.UTF-8'
 
 # 定时任务
+# TODO: 静态文件放在Nginx时，这个目录需要更改？最好还是改成相对路径
 CRONJOBS = [
     # 每5分钟执行一次生成主页静态文件
     ('*/1 * * * *', 'contents.crons.generate_static_index_html',
@@ -269,7 +271,7 @@ CORS_ORIGIN_WHITELIST = (
     '127.0.0.1:8080',
     'localhost:8080',
     'www.meiduo.site:8080',
-    'www.meiduo.site:8000',
+    'api.meiduo.site:8000',
 )
 CORS_ALLOW_CREDENTIALS = True  # 允许携带cookie
 
@@ -305,13 +307,13 @@ CKEDITOR_UPLOAD_PATH = ''  # 上传图片保存路径，使用了FastDFS，所�
 # django文件存储
 DEFAULT_FILE_STORAGE = 'meiduo_mall.utils.fastdfs.fdfs_storage.FasfDFSStorage'
 # FastDFS
-FDFS_URL = 'http://172.16.10.132:8888/'  # 访问图片的路径域名 ip地址修改为自己机器的ip地址
+FDFS_URL = 'http://172.16.10.138:8888/' # 端口号固定为:8888
 FDFS_CLIENT_CONF = os.path.join(BASE_DIR, 'utils/fastdfs/client.conf')
 
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-        'URL': 'http://172.16.10.132:9200/',  # 此处为elasticsearch运行的服务器ip地址，端口号固定为9200
+        'URL': 'http://172.16.10.138:9200/',  # 此处为elasticsearch运行的服务器ip地址，端口号固定为9200
         'INDEX_NAME': 'meiduo',  # 指定elasticsearch建立的索引库的名称
     },
 }

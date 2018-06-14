@@ -29,7 +29,7 @@ class PaymentView(APIView):
         # 根据订单的数据，向支付宝发起请求，获取支付链接参数
         alipay_client = AliPay(
             appid=settings.ALIPAY_APPID,
-            # TODO: 没有集成异步接受支付宝通知
+            # TODO: 没有集成异步接受支付宝通知,正常流程需要以异步通知结果为支付成功与否的标准，或是通过查询api去支付宝查询支付结果
             app_notify_url=None,  # 默认回调url
             app_private_key_path=os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                               "keys/app_private_key.pem"),
@@ -88,6 +88,6 @@ class PaymentStatusView(APIView):
             # 参数据不是支付宝的，是非法请求
             return Response({'message': '非法请求'}, status=status.HTTP_403_FORBIDDEN)
 
-# TODO: 未实现
+# TODO: 未实现功能
 # 1.我的订单 2.修改密码 3.评价与评分 4.三级导航分类
 

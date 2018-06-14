@@ -94,7 +94,7 @@ class CheckSMSCodeSerializer(serializers.Serializer):
         if not user:
             raise serializers.ValidationError('用户不存在')
 
-        # TODO: 用户保存到序列化器
+        # 用户保存到序列化器,方便类视图获取user_id
         self.user = user
 
         redis_conn = get_redis_connection('verify_codes')
@@ -182,12 +182,15 @@ class EmailVerificationSerializer(serializers.ModelSerializer):
     token = serializers.CharField(label='邮件token', read_only=True)
 
     def validate(self, attrs):
-        # TODO: 为什么需要以这种方式获取token呢？？？
+
+        # 为什么需要以这种方式获取token呢？ 因为token设置成了read_only
+        # read_only 序列化时使用 write_only 反序列化时使用
+        # 所以在反序列化校验时，不能从attrs中获取token
         access_token = self.context.get('request').query_params.get('token')
         if not access_token:
             return serializers.ValidationError('缺少access_token')
 
-        # TODO： 如果check直接返回已经更新的model，那根本就不需要使用create方法了
+        # 如果check直接返回已经更新的model，那根本就不需要使用create方法了
         user = User.check_email_verification_token(access_token)
         if not user:
             return serializers.ValidationError('链接无效')
@@ -236,13 +239,13 @@ class UserAddressTitleSerializer(serializers.ModelSerializer):
 
 
 class AddUserHistorySerializer(serializers.Serializer):
-    sku_id = serializers.IntegerField(min_value=1)
+    sku_id = serializers.IntegerField(label='商品SKU编号', min_value=1)
 
     def validate_sku_id(self, value):
         try:
             SKU.objects.get(id=value)
         except SKU.DoesNotExist:
-            raise serializers.ValidationError("sku id 不存在")
+            raise serializers.ValidationError("sku_id 不存在")
         return value
 
     def create(self, validated_data):

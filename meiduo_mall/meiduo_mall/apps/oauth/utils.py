@@ -71,11 +71,11 @@ class OauthQQ(object):
         url = 'https://graph.qq.com/oauth2.0/me?access_token=' + access_token
         # callback( {"client_id":"YOUR_APPID","openid":"YOUR_OPENID"} );
         try:
-            reponse = urlopen(url).read().decode()
-            # TODO:可以换种方式操作字符串
-            reponse_dict = json.loads(reponse[10:-4])
+            response = urlopen(url).read().decode()
+            # 切片是最便捷的获取openid的形式
+            response_dict = json.loads(response[10:-4])
         except Exception as e:
             logger.error(e)
             raise QQAPIException('获取openid异常')
 
-        return reponse_dict.get('openid')
+        return response_dict.get('openid')

@@ -7,7 +7,7 @@
 """
 import sys
 
-# TODO:路径的问题？
+# 路径的问题？ 通过这种方式能找到项目起始及apps目录
 sys.path.insert(0, '../')
 sys.path.insert(0, '../meiduo_mall/apps')
 

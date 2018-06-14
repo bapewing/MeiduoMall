@@ -9,7 +9,7 @@ var vm = new Vue({
         amount: 0,
         pay_method: '',
     },
-    // TODO: Vue的这个属性
+    // Vue的这个属性与method类似，好像属性的getter或是setter变化时，会自动监听
     computed: {
         operate: function () {
             if (this.pay_method == 1) {

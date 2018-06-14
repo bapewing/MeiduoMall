@@ -94,7 +94,7 @@ class SMSCodeTokenView(GenericAPIView):
             return Response({'message': '用户不存在'}, status=status.HTTP_404_NOT_FOUND)
 
         access_token = user.generate_send_sms_token()
-        # TODO: 正则的sub方法
+        # 正则sub分组替换 https://blog.csdn.net/hzliyaya/article/details/52495150
         mobile = re.sub(r'(\d{3})\d{4}(\d{4})', r'\1****\2', user.mobile)
 
         return Response({
@@ -125,7 +125,8 @@ class PasswordTokenView(GenericAPIView):
         return Response({'user_id': user.id, 'access_token': access_token})
 
 
-# TODO： 不能继承UpdateAPIView吗？
+# 不能继承UpdateAPIView吗？
+# 可以继承自UpdateAPIView 只需要修改js中请求方法为put就行
 class PasswordView(UpdateModelMixin, GenericAPIView):
     """
     重置用户密码
@@ -142,7 +143,7 @@ class UserDetailView(RetrieveAPIView):
     用户详细信息
     """
     serializer_class = UserDetailSerializer
-    # TODO: django认证系统
+    # TODO: django认证系统文档
     permission_classes = [IsAuthenticated]
 
     # RetrieveAPIView只能自动处理url中包含pk的请求 /user/pk/
@@ -162,11 +163,15 @@ class EmailView(UpdateAPIView):
         return self.request.user
 
     # TODO:使用下面这种方法时，必须定义query_set ?
+    # 使用下面这种方法时，必须定义query_set? 如果继承自CreateAPIView就不需要query_set
+    # 因为update操作最后会调用get_object方法，get_object方法内部需要在数据库中查询要更新的对象
+    # 所以如果不用重写get_object的方式，必须要定义查询集，确保视图能够查询到要更新的对象
     # def get_serializer(self, *args, **kwargs):
     #     return EmailSerializer(self.request.user, data=self.request.data)
 
 
-# TODO: 可以使用UpdateAPIView吗？PK怎么办？能够从request.user中获取用户吗？是不是需要前端传送jwt token？应该没有jwt token
+# 可以使用UpdateAPIView吗？PK怎么办？能够从request.user中获取用户吗？是不是需要前端传送jwt token？应该没有jwt token
+# 不可以使用UpdateAPIView，因为获取不到pk。不能从request.user中获取用户，此时也没有jwt token可以传送给后端。
 class EmailVerificationView(CreateModelMixin, GenericAPIView):
     serializer_class = EmailVerificationSerializer
 
@@ -232,6 +237,7 @@ class AddressViewSet(CreateModelMixin, UpdateModelMixin, GenericViewSet):
 
 class UserHistoryView(CreateModelMixin, GenericAPIView):
     """用户历史记录"""
+    # jwt_token 过期时会有401错误，不能添加用户历史浏览记录，不能算是bug
     permission_classes = [IsAuthenticated]
     serializer_class = AddUserHistorySerializer
 
@@ -253,6 +259,7 @@ class UserHistoryView(CreateModelMixin, GenericAPIView):
             sku_list.append(sku)
 
         # 使用序列化器序列化
+        # 如果要被序列化的是包含多条数据的查询集QuerySet，可以通过添加many=True参数补充说明
         serializer = SKUSerializer(sku_list, many=True)
         return Response(serializer.data)
 
@@ -261,6 +268,7 @@ class UserAuthorizeView(ObtainJSONWebToken):
     """
     用户认证
     """
+
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
 

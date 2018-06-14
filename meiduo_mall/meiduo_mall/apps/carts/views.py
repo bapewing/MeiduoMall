@@ -12,7 +12,8 @@ from goods.models import SKU
 
 class CartView(APIView):
 
-    # TODO:了解下重写方法。
+    # 身份认证、权限检查、流量控制最后都是在dispatch分发时进行控制
+    # 身份认证通过最后通过perform_authentication返回用户
     # 允许用户未登陆情况下访问此接口，通过判断user的值来确定是否登陆
     def perform_authentication(self, request):
         pass
@@ -36,6 +37,7 @@ class CartView(APIView):
             redis_conn = get_redis_connection('cart')
             pl = redis_conn.pipeline()
 
+            # 对购物车中商品进行的是覆盖操作
             pl.hincrby('cart_%s' % user.id, sku_id, count)
             if selected:
                 pl.sadd('cart_selected_%s' % user.id, sku_id)
@@ -109,7 +111,6 @@ class CartView(APIView):
             sku.count = cart_dict[sku.id]['count']
             sku.selected = cart_dict[sku.id]['selected']
 
-        # TODO: 多的一方序列化
         serializer = CartSKUSerializer(sku_obj_list, many=True)
         return Response(serializer.data)
 
@@ -131,6 +132,7 @@ class CartView(APIView):
 
             redis_conn = get_redis_connection('cart')
             pl = redis_conn.pipeline()
+            # 对购物车中商品进行的是覆盖操作
             pl.hset('cart_%s' % user.id, sku_id, count)
             if selected:
                 # 勾选增加记录
@@ -164,7 +166,6 @@ class CartView(APIView):
 
     def delete(self, request):
 
-        # TODO: 不使用序列化器该怎样去校验？
         serializer = CartDeleteSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         sku_id = serializer.validated_data.get('sku_id')
